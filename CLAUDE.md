@@ -6,35 +6,66 @@ This file provides context and conventions for AI assistants (e.g., Claude Code)
 
 ## Project Overview
 
-**Plex Catalog** is a tool for cataloging, browsing, and managing media libraries hosted on a [Plex Media Server](https://www.plex.tv/). The goal is to provide a structured, queryable catalog of Plex content — movies, TV shows, music, photos — beyond what the native Plex UI exposes.
+**Plex Catalog** is a **browser extension** that allows Plex Media Server users to export an index of their media library — movies and TV shows — into common document formats. It connects directly to the user's local Plex server, requires no external infrastructure, and keeps all data on the user's machine.
 
-Typical use cases include:
-- Exporting a Plex library to a portable format (CSV, JSON, SQLite)
-- Searching/filtering media by metadata (genre, year, rating, watched status)
-- Comparing libraries across multiple Plex servers
-- Generating reports or statistics about a media collection
+### Origin
+The project began as a local macOS script that read a Plex library and output an Excel spreadsheet. This browser extension is the next iteration: more accessible, cross-platform, and with richer export options.
 
----
-
-## Repository Status
-
-> **This repository is in early/initial setup.** No source code has been committed yet. This CLAUDE.md is the founding document and should be updated as the project evolves.
+### Core Use Case
+A user installs the extension, points it at their Plex server, selects Movies and/or TV Shows, and exports a formatted catalog in their preferred format.
 
 ---
 
-## Technology Stack (Intended)
+## Product Scope (V1)
 
-Since no stack has been committed yet, the following is the expected/planned direction. Update this section once a language and framework are chosen.
+### What It Does
+- Connects to a local Plex Media Server via `http://localhost:32400` (or user-configured URL + token)
+- Reads the user's Movies and TV Shows libraries
+- Exports a catalog with the following fields per item:
+
+**Movies:**
+- Title
+- Director(s) — supports multiple
+- Top 4 billed actors
+
+**TV Shows:**
+- Series title
+- Season and episode number (e.g. S01E09)
+- Episode director
+- Executive Producer (closest Plex equivalent to showrunner — Plex has no explicit "showrunner" field)
+- Top 4 billed actors
+
+### Export Formats
+- `.xlsx` — lightly formatted spreadsheet (SheetJS)
+- `.docx` — formatted Word document (docx.js)
+- `.rtf` — rich text (hand-generated)
+- `.txt` — plain text
+- `.xml` — structured data
+- `.pdf` — formatted document (jsPDF or pdfmake)
+
+### Free Tier / Monetization
+- Free: export up to **20 movies** and **5 TV series**
+- Paid: **one-time license key** (~$2.99) unlocks unlimited exports
+- License key purchased via external payment page (Gumroad, LemonSqueezy, or Stripe)
+- Key validated locally in the extension (hash-based or lightweight API call)
+- **Do not use Chrome Web Store in-app purchase** — fees make $0.99 unworkable
+
+---
+
+## Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Language | Python 3.11+ (preferred) or Node.js |
-| Plex API | [python-plexapi](https://python-plexapi.readthedocs.io/) or Plex REST API directly |
-| Storage | SQLite (local), optionally PostgreSQL |
-| CLI | `click` or `argparse` |
-| Config | `.env` / `config.yaml` |
-| Tests | `pytest` (Python) or `jest` (Node) |
-| Packaging | `pyproject.toml` / `setup.cfg` (Python) or `package.json` (Node) |
+| Extension platform | Chrome (Manifest V3) — Firefox to follow |
+| Language | TypeScript |
+| Plex integration | Direct REST calls to Plex HTTP API (`X-Plex-Token` header auth) |
+| XLS export | [SheetJS (xlsx)](https://sheetjs.com/) |
+| DOCX export | [docx.js](https://docx.js.org/) |
+| PDF export | [jsPDF](https://github.com/parallax/jsPDF) or [pdfmake](http://pdfmake.org/) |
+| RTF/TXT/XML | Hand-generated strings |
+| Build | Vite or webpack (TBD) |
+| Tests | Jest + Chrome extension test utilities |
+| Linting | ESLint + Prettier |
 
 ---
 
@@ -42,26 +73,41 @@ Since no stack has been committed yet, the following is the expected/planned dir
 
 ```
 Plex-catalog-/
-├── CLAUDE.md               # This file
-├── README.md               # User-facing documentation
-├── .env.example            # Example environment variables (never commit .env)
-├── pyproject.toml          # Project metadata and dependencies
+├── CLAUDE.md                   # This file
+├── README.md                   # User-facing documentation
+├── manifest.json               # Chrome Extension Manifest V3
+├── package.json
+├── tsconfig.json
+├── vite.config.ts              # or webpack.config.js
 ├── src/
-│   └── plex_catalog/
-│       ├── __init__.py
-│       ├── cli.py          # Entry point / CLI commands
-│       ├── client.py       # Plex API client/connection logic
-│       ├── catalog.py      # Core cataloging logic
-│       ├── models.py       # Data models (Movie, Show, Episode, etc.)
-│       ├── export.py       # Export to CSV/JSON/SQLite
-│       └── config.py       # Configuration loading
+│   ├── popup/
+│   │   ├── popup.html          # Extension popup UI
+│   │   ├── popup.ts            # Popup logic
+│   │   └── popup.css
+│   ├── background/
+│   │   └── service-worker.ts   # MV3 background service worker
+│   ├── plex/
+│   │   ├── client.ts           # Plex API calls (fetch wrapper)
+│   │   └── types.ts            # TypeScript types for Plex API responses
+│   ├── export/
+│   │   ├── xlsx.ts             # XLS export
+│   │   ├── docx.ts             # DOCX export
+│   │   ├── pdf.ts              # PDF export
+│   │   ├── rtf.ts              # RTF export
+│   │   ├── txt.ts              # Plain text export
+│   │   └── xml.ts              # XML export
+│   ├── license/
+│   │   └── license.ts          # License key validation + free tier gating
+│   └── utils/
+│       └── formatting.ts       # Shared formatting helpers
 ├── tests/
-│   ├── conftest.py
-│   ├── test_client.py
-│   ├── test_catalog.py
-│   └── test_export.py
-└── docs/
-    └── usage.md
+│   ├── plex/
+│   │   └── client.test.ts
+│   ├── export/
+│   │   └── xlsx.test.ts
+│   └── license/
+│       └── license.test.ts
+└── dist/                       # Built extension (gitignored)
 ```
 
 ---
@@ -71,43 +117,34 @@ Plex-catalog-/
 ### Setting Up
 
 ```bash
-# Clone and enter the repo
 git clone <repo-url>
 cd Plex-catalog-
+npm install
 
-# Create a virtual environment (Python)
-python -m venv .venv
-source .venv/bin/activate
+# Build the extension
+npm run build
 
-# Install dependencies
-pip install -e ".[dev]"
-
-# Copy and configure environment variables
-cp .env.example .env
-# Edit .env with your Plex server URL and token
+# Development build with watch
+npm run dev
 ```
 
-### Running the App
-
-```bash
-# Once CLI is implemented:
-plex-catalog --help
-plex-catalog export --format json --output catalog.json
-```
+### Loading in Chrome (Development)
+1. Go to `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked** and select the `dist/` folder
 
 ### Running Tests
 
 ```bash
-pytest
-pytest --cov=src/plex_catalog
+npm test
+npm run test:coverage
 ```
 
 ### Linting / Formatting
 
 ```bash
-ruff check .
-ruff format .
-mypy src/
+npm run lint
+npm run format
 ```
 
 ---
@@ -115,58 +152,70 @@ mypy src/
 ## Key Conventions
 
 ### Code Style
-- Follow [PEP 8](https://peps.python.org/pep-0008/) for Python.
-- Use `ruff` for linting and formatting (replaces `flake8`, `black`, `isort`).
-- Type annotations are required for all public functions and methods.
-- Docstrings on public APIs only; inline comments for non-obvious logic only.
+- TypeScript throughout — no plain `.js` files in `src/`
+- ESLint + Prettier for formatting; run before committing
+- Types for all Plex API responses in `src/plex/types.ts` — do not use `any`
+- Keep export modules independent — each format (`xlsx.ts`, `pdf.ts`, etc.) should be self-contained
 
-### Configuration & Secrets
-- **Never commit `.env` files or Plex tokens.** Use `.env.example` with placeholder values.
-- Plex token (`PLEX_TOKEN`) and server URL (`PLEX_BASE_URL`) must come from environment variables or a config file outside the repo.
-- All config should be loadable via `src/plex_catalog/config.py`.
+### Plex API
+- All Plex HTTP calls go through `src/plex/client.ts` — never call `fetch` directly from other modules
+- Auth is via `X-Plex-Token` header — **never store the token in plaintext in logs or exports**
+- Plex does not have a "showrunner" field — use Executive Producer as the closest equivalent for TV
+- Media type IDs: `movie` = 1, `show` = 2, `season` = 3, `episode` = 4
+- Actors are returned in billing order — take the first 4
+- Do not invent API endpoints — verify against the Plex HTTP API or test against a real server
+
+### Secrets & User Data
+- The user's Plex token is stored in `chrome.storage.local` — never `localStorage`, never hardcoded
+- No user data is ever sent to any external server (except optional license key validation)
+- License key validation should be minimal — a hash check or simple lookup, no telemetry
+
+### Free Tier Gating
+- Limit logic lives exclusively in `src/license/license.ts`
+- Free tier: 20 movies, 5 TV series per export
+- Gate at export time, not at fetch time — always fetch the full library, truncate before export
+- Show a clear, non-aggressive upgrade prompt when the limit is hit
 
 ### Git Conventions
-- Branch naming: `feature/<short-description>`, `fix/<issue-or-description>`, `chore/<task>`
-- Commit messages: imperative mood, present tense (e.g., `Add export to CSV`, `Fix auth token refresh`)
-- Do not commit generated files (exports, logs, `.pyc`, `__pycache__`, `.venv`)
-
-### Error Handling
-- Raise specific exceptions rather than bare `Exception`.
-- All Plex API calls should handle connection errors and auth failures gracefully.
-- CLI commands should print user-friendly messages on failure and exit with non-zero codes.
+- Branch naming: `feature/<short-description>`, `fix/<description>`, `chore/<task>`
+- Commit messages: imperative mood, present tense (e.g., `Add XLSX export`, `Fix episode director field`)
+- Do not commit `dist/`, `node_modules/`, or any file containing a real Plex token
 
 ### Testing
-- Unit tests mock all Plex API calls (no real server required for tests).
-- Integration tests (if any) go in `tests/integration/` and require a real Plex server; skip by default.
-- Aim for >80% coverage on core logic (`catalog.py`, `models.py`, `export.py`).
-
----
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PLEX_BASE_URL` | Base URL of your Plex server (e.g., `http://localhost:32400`) | Yes |
-| `PLEX_TOKEN` | Plex authentication token | Yes |
-| `CATALOG_DB_PATH` | Path to SQLite database (default: `./catalog.db`) | No |
-| `LOG_LEVEL` | Logging verbosity (`DEBUG`, `INFO`, `WARNING`) | No |
+- Mock all Plex API calls in unit tests — no real server required
+- Test each export format with a small fixture dataset
+- Test the free tier cutoff logic explicitly
 
 ---
 
 ## Plex API Notes
 
-- The Plex REST API is documented at `{PLEX_BASE_URL}` — append `/library/sections` to list libraries.
-- Authentication uses an `X-Plex-Token` header on every request.
-- `python-plexapi` is the recommended client library; it handles auth, pagination, and object mapping.
-- Media types in Plex: `movie` (1), `show` (2), `season` (3), `episode` (4), `artist` (8), `album` (9), `track` (10), `photo` (13).
+- Base URL is typically `http://localhost:32400` for local servers
+- All requests require `X-Plex-Token` header
+- List libraries: `GET /library/sections`
+- List movies: `GET /library/sections/{sectionId}/all?type=1`
+- List shows: `GET /library/sections/{sectionId}/all?type=2`
+- List episodes: `GET /library/sections/{sectionId}/all?type=4`
+- Director, actors, and producers are in the `Role`, `Director`, and `Producer` sub-elements of each media item
+- Plex does not have a native "showrunner" label — `Producer` with `role = "Executive Producer"` is the closest
+
+---
+
+## Future Considerations
+
+- **Firefox support** — nearly identical codebase, separate manifest entry
+- **Safari extension** — requires macOS app wrapper; defer until Chrome/Firefox proven
+- **Music libraries** — deliberately excluded from V1; Plex music is a minority use case and Plex's music metadata is unreliable
+- **Hosted/SaaS mode** — possible future path using Plex OAuth for remote servers
+- **Native macOS app** — possible via Tauri wrapper around the same web frontend
 
 ---
 
 ## What AI Assistants Should Know
 
-- This repo is currently **empty** — no assumptions about existing code patterns.
-- When adding the first code, establish the structure described above.
-- Always check if `.env` or sensitive config is being accidentally included in diffs/commits.
-- Do not invent Plex API endpoints — verify against `python-plexapi` docs or the official Plex API reference.
-- Keep the CLI simple and composable; avoid monolithic commands.
-- Update this CLAUDE.md whenever the stack, structure, or conventions change significantly.
+- This is a **browser extension**, not a web app, CLI, or Python script — previous stack assumptions are obsolete
+- All processing is **client-side** — no backend server exists or should be added in V1
+- The Plex token is sensitive — treat it like a password in all code and comments
+- "Showrunner" is not a Plex API field — use Executive Producer and document the limitation
+- Keep the free tier gating logic clean and in one place — it's a product decision, not a technical one
+- Update this CLAUDE.md whenever scope, stack, or structure changes significantly
