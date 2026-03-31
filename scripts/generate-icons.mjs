@@ -69,8 +69,14 @@ const tvPixels = recolorPixels(botRaw, srcW, srcH - halfH, channels)
 // Icons sit in the upper portion; arrow takes the bottom 36px.
 const ARROW_H = 30
 const ARROW_TOP = CANVAS - ARROW_H - 2
-const ICON_W = 60
-const ICON_H = ARROW_TOP - 4  // fill almost the full canvas above the arrow
+const ICON_W = Math.round(60 * 0.85)                       // 51px
+const ICON_H = Math.round((ARROW_TOP - 4) * 0.85)          // ~78px
+
+// Center icons horizontally and vertically in the space above the arrow
+const GAP = Math.round((CANVAS - ICON_W * 2) / 3)          // ~8px
+const ICON_LEFT_FILM = GAP
+const ICON_LEFT_TV = GAP + ICON_W + GAP
+const ICON_TOP = Math.round((ARROW_TOP - ICON_H) / 2)
 
 // Convert raw pixels to PNG, trim background padding, resize to target
 async function prepareIcon(pixels, w, h) {
@@ -114,14 +120,14 @@ const icon128 = await sharp(bgMask)
     {
       input: filmBuf,
       raw: { width: ICON_W, height: ICON_H, channels: 3 },
-      top: 4,
-      left: 4,
+      top: ICON_TOP,
+      left: ICON_LEFT_FILM,
     },
     {
       input: tvBuf,
       raw: { width: ICON_W, height: ICON_H, channels: 3 },
-      top: 4,
-      left: 68,
+      top: ICON_TOP,
+      left: ICON_LEFT_TV,
     },
     {
       input: arrowSvg,
