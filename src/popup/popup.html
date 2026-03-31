@@ -8,8 +8,88 @@
   </head>
   <body>
     <div id="app">
-      <h1>Plex Catalog</h1>
-      <p>Phase 1 — Setup complete</p>
+
+      <!-- Header -->
+      <header>
+        <h1>Plex Catalog</h1>
+        <p class="tagline">Export your library</p>
+      </header>
+
+      <!-- Connection section -->
+      <section id="section-connect">
+        <div class="field">
+          <label for="input-url">Server URL</label>
+          <input
+            type="text"
+            id="input-url"
+            placeholder="http://localhost:32400"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="field">
+          <label for="input-token">Plex Token</label>
+          <input
+            type="password"
+            id="input-token"
+            placeholder="Your X-Plex-Token"
+            autocomplete="off"
+          />
+          <p class="hint">
+            <a href="https://support.plex.tv/articles/204059436" target="_blank">
+              How do I find my token?
+            </a>
+          </p>
+        </div>
+        <button id="btn-connect" class="btn btn-primary">Connect</button>
+        <p id="msg-connect-error" class="msg msg-error" hidden></p>
+      </section>
+
+      <!-- Export options (shown after connecting) -->
+      <section id="section-export" hidden>
+
+        <div class="connected-bar">
+          <span class="status-dot"></span>
+          <span id="label-server"></span>
+          <button id="btn-disconnect" class="btn-link">Disconnect</button>
+        </div>
+
+        <div class="field">
+          <label>Library</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="library" value="both" checked />
+              Both
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="library" value="movies" />
+              Movies
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="library" value="shows" />
+              TV Shows
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="select-format">Format</label>
+          <select id="select-format">
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="docx">Word (.docx)</option>
+            <option value="pdf">PDF (.pdf)</option>
+            <option value="rtf">Rich Text (.rtf)</option>
+            <option value="txt">Plain Text (.txt)</option>
+            <option value="xml">XML (.xml)</option>
+          </select>
+        </div>
+
+        <button id="btn-export" class="btn btn-primary">Export</button>
+        <p id="msg-export-status" class="msg" hidden></p>
+        <p id="msg-export-error" class="msg msg-error" hidden></p>
+
+      </section>
+
     </div>
     <script type="module" src="./popup.ts"></script>
   </body>
