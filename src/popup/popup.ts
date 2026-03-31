@@ -1,5 +1,11 @@
 import { PlexClient, PlexApiError, PlexConnectionError } from '../plex/client'
 import type { LibrarySection } from '../plex/types'
+import { exportXlsx } from '../export/xlsx'
+import { exportDocx } from '../export/docx'
+import { exportPdf } from '../export/pdf'
+import { exportRtf } from '../export/rtf'
+import { exportTxt } from '../export/txt'
+import { exportXml } from '../export/xml'
 
 // ---------------------------------------------------------------------------
 // Storage keys — token stored in chrome.storage.local per project conventions
@@ -126,15 +132,17 @@ async function handleExport(): Promise<void> {
 
     const catalog = await activeClient.getCatalog(sectionIds)
 
-    // Phase 4 will replace this with real export logic.
-    // For now, confirm data was fetched successfully.
-    const movieCount = catalog.movies.length
-    const showCount = catalog.shows.length
-    const episodeCount = catalog.shows.reduce((n, s) => n + s.episodes.length, 0)
+    switch (format) {
+      case 'xlsx': exportXlsx(catalog); break
+      case 'docx': await exportDocx(catalog); break
+      case 'pdf':  exportPdf(catalog); break
+      case 'rtf':  exportRtf(catalog); break
+      case 'txt':  exportTxt(catalog); break
+      case 'xml':  exportXml(catalog); break
+      default: throw new Error(`Unknown format: ${format}`)
+    }
 
-    showExportStatus(
-      `Ready to export: ${movieCount} movies, ${showCount} shows (${episodeCount} episodes) as .${format}. Export logic coming in Phase 4.`
-    )
+    showExportStatus('Export complete.')
   } catch (error) {
     if (error instanceof PlexConnectionError) {
       showExportError('Lost connection to Plex server.')
