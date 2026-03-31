@@ -289,7 +289,7 @@ Verify every dependency is compatible with commercial distribution. As of the cu
 - Never say "Great question!" or any variant.
 - Don't over-apologize.
 - No reinforcement compliments unless the user explicitly asks for a review — feedback is fine when genuinely warranted, not as an engagement mechanism.
-- Use em-dashes (—) and en-dashes (–) correctly; don't substitute hyphens where they don't belong.
+- Never use em-dashes (—) or en-dashes (–). Use hyphens or restructure the sentence.
 
 ---
 
