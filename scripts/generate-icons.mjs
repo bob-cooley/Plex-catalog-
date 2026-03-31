@@ -65,40 +65,44 @@ const tvPixels = recolorPixels(botRaw, srcW, srcH - halfH, channels)
 // ---------------------------------------------------------------------------
 // Scale each icon to fit in a 52x52 box
 // ---------------------------------------------------------------------------
-const ICON_SIZE = 52
+// Trim dark padding from each icon, then scale up to fill available space.
+// Icons sit in the upper portion; arrow takes the bottom 36px.
+const ARROW_H = 30
+const ARROW_TOP = CANVAS - ARROW_H - 2
+const ICON_W = 60
+const ICON_H = ARROW_TOP - 4  // fill almost the full canvas above the arrow
 
-const filmBuf = await sharp(filmPixels, {
-  raw: { width: srcW, height: halfH, channels: 3 },
-})
-  .resize(ICON_SIZE, ICON_SIZE, { fit: 'contain', background: BG })
-  .raw()
-  .toBuffer()
+// Convert raw pixels to PNG, trim background padding, resize to target
+async function prepareIcon(pixels, w, h) {
+  const png = await sharp(pixels, { raw: { width: w, height: h, channels: 3 } })
+    .png()
+    .toBuffer()
 
-const tvBuf = await sharp(tvPixels, {
-  raw: { width: srcW, height: srcH - halfH, channels: 3 },
-})
-  .resize(ICON_SIZE, ICON_SIZE, { fit: 'contain', background: BG })
-  .raw()
-  .toBuffer()
+  return sharp(png)
+    .trim({ background: { r: BG.r, g: BG.g, b: BG.b }, threshold: 10 })
+    .resize(ICON_W, ICON_H, { fit: 'contain', background: BG })
+    .raw()
+    .toBuffer()
+}
+
+const filmBuf = await prepareIcon(filmPixels, srcW, halfH)
+const tvBuf = await prepareIcon(tvPixels, srcW, srcH - halfH)
 
 // ---------------------------------------------------------------------------
 // Compose the 128x128 icon
 // Layout:
-//   Film icon:  top-left  (8, 8)
-//   TV icon:    top-right (68, 8)
-//   Arrow:      bottom center
+//   Film icon:  top-left  (4, 4)
+//   TV icon:    top-right (68, 4)
+//   Arrow:      bottom — pure triangle, no stem
 // ---------------------------------------------------------------------------
 
-// Wide downward arrow as SVG
+// Wide downward arrow — triangle only, no stem
 const arrowSvg = Buffer.from(`
-<svg xmlns="http://www.w3.org/2000/svg" width="112" height="44">
-  <polygon
-    points="38,0 74,0 74,22 112,22 56,44 0,22 38,22"
-    fill="#E5A00D"
-  />
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="${ARROW_H}">
+  <polygon points="0,0 120,0 60,${ARROW_H}" fill="#E5A00D"/>
 </svg>`)
 
-// Rounded dark background mask
+// Rounded dark background
 const bgMask = Buffer.from(`
 <svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}">
   <rect width="${CANVAS}" height="${CANVAS}" rx="18" ry="18" fill="#1F1F1F"/>
@@ -109,20 +113,20 @@ const icon128 = await sharp(bgMask)
   .composite([
     {
       input: filmBuf,
-      raw: { width: ICON_SIZE, height: ICON_SIZE, channels: 3 },
-      top: 8,
-      left: 8,
+      raw: { width: ICON_W, height: ICON_H, channels: 3 },
+      top: 4,
+      left: 4,
     },
     {
       input: tvBuf,
-      raw: { width: ICON_SIZE, height: ICON_SIZE, channels: 3 },
-      top: 8,
+      raw: { width: ICON_W, height: ICON_H, channels: 3 },
+      top: 4,
       left: 68,
     },
     {
       input: arrowSvg,
-      top: 78,
-      left: 8,
+      top: ARROW_TOP,
+      left: 4,
     },
   ])
   .png()
