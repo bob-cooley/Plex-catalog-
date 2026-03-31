@@ -293,6 +293,41 @@ Verify every dependency is compatible with commercial distribution. As of the cu
 
 ---
 
+## Writing on the User's Behalf
+
+These rules apply **only** when composing text, messaging, or prose for the user to publish or send. They do not apply to technical discussion, code comments, or documentation.
+
+### What to Do
+- Use concrete nouns and specific details. Names, places, dates, numbers. Vague generalities are a tell.
+- Vary sentence length deliberately. Mix short punchy sentences with longer ones. The occasional fragment is fine.
+- Take a clear position. Don't aggregate perspectives and sit in the middle. Say something.
+- Use contractions naturally. "We've", "it's", "don't" -- the way a person actually writes.
+- Semicolons and parentheses are fine; they read as human. (AI avoids them.)
+- Let the odd "But" or "And" start a sentence. Correct grammar is not the goal -- natural rhythm is.
+- Ask for raw material before writing: specific anecdotes, opinions, details. Style guidelines can't substitute for actual content.
+
+### What to Avoid
+The following words and phrases are overused by AI and cluster together as a strong signal. Avoid them when writing on the user's behalf:
+
+**Filler nouns:** tapestry, journey, landscape, realm, lens, testament, nuance, interplay, paradigm, synergy, ecosystem, kaleidoscope, roadmap, toolkit, symphony
+
+**Filler verbs:** delve, embark, foster, leverage, underscore, illuminate, resonate, elevate, empower, unleash, unlock, unravel, showcase, navigate, harness, revolutionize, reimagine, transcend
+
+**Filler adjectives:** transformative, groundbreaking, invaluable, robust, seamless, vibrant, multifaceted, pivotal, nuanced, timeless, compelling, comprehensive, meticulous, innovative, dynamic
+
+**Filler adverbs:** meticulously, seamlessly, tirelessly, relentlessly, profoundly, crucially, importantly, notably, additionally
+
+**Filler phrases:** "in conclusion", "in summary", "it's important to note", "it's crucial to", "not only X but also Y", "a testament to", "paving the way", "at the end of the day", "when it comes to", "in a world where", "I hope this email finds you well", "deep dive"
+
+### What to Avoid Structurally
+- Uniform paragraph length -- vary it.
+- Formulaic introductions that restate the prompt.
+- Conclusions that summarize what was just said. End on something, don't recap.
+- Lists when prose would read better.
+- Anything that could have been written in response to ten different prompts. Stay specific to this one.
+
+---
+
 ## What AI Assistants Should Know
 
 - This is a **browser extension**, not a web app, CLI, or Python script — previous stack assumptions are obsolete
