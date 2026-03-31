@@ -201,6 +201,57 @@ npm run format
 
 ---
 
+## Licensing & Legal Checklist
+
+This section exists because licensing is commonly overlooked by independent software creators. Review all items before shipping or monetizing.
+
+### Third-Party Library Licenses
+Verify every dependency is compatible with commercial distribution. As of the current stack:
+
+| Library | License | Commercial use allowed | Notes |
+|---------|---------|----------------------|-------|
+| SheetJS (community) | Apache 2.0 | Yes | Free tier only; Pro version has separate license |
+| docx.js | MIT | Yes | No restrictions |
+| jsPDF | MIT | Yes | No restrictions |
+| pdfmake | MIT | Yes | No restrictions |
+| TypeScript | Apache 2.0 | Yes | No restrictions |
+| Vite | MIT | Yes | No restrictions |
+| ESLint | MIT | Yes | No restrictions |
+
+**Rule:** Before adding any new dependency, check its license. Avoid GPL and AGPL libraries — they require your code to also be open-sourced if distributed.
+
+### Output Format Licenses
+- `.xlsx` / `.docx` — OOXML open standard (ISO 29500); no Microsoft fees or royalties
+- `.pdf` — Open standard (ISO 32000) since 2008; Adobe has no claim over PDF-generating software
+- `.rtf` — Microsoft spec, publicly available, never licensed; no fees
+- `.txt` / `.xml` — No ownership; no fees
+
+### Plex API Usage
+- Review the [Plex Developer Terms of Service](https://www.plex.tv/en-gb/about/privacy-legal/) before shipping
+- The Plex API is available for third-party use but verify no commercial restrictions apply
+- Do not imply official Plex endorsement in store listings or marketing
+
+### Browser Store Policies
+- **Chrome Web Store** — Review [Developer Program Policies](https://developer.chrome.com/docs/webstore/program-policies/) before submission; policies change
+- **Firefox AMO** — Review [Add-on Policies](https://extensionworkshop.com/documentation/publish/add-on-policies/)
+- **Mac App Store** (if pursued) — Review [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
+- All stores prohibit misleading descriptions, excessive permissions, and hidden functionality
+
+### Privacy & Data Handling
+- The extension stores the user's Plex token locally — document this clearly in the store listing and privacy policy
+- A **privacy policy is required** by Chrome Web Store and Mac App Store even for free extensions
+- State explicitly: no data is collected, no analytics, no external servers (except license validation)
+- If license validation calls an external server, document exactly what is sent
+
+### Trademark
+- Do not use the Plex name or logo in your extension icon or store listing in a way that implies official affiliation
+- Check that "Plex Catalog" or your chosen product name does not conflict with existing trademarks before launch
+
+### General Reminder
+**Run through this checklist again before every major version and store submission.** Library licenses, store policies, and API terms can change independently of your code.
+
+---
+
 ## Future Considerations
 
 - **Firefox support** — nearly identical codebase, separate manifest entry
