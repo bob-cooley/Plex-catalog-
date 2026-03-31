@@ -1,49 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
 
   <!-- Background -->
-  <rect width="128" height="128" rx="22" fill="#1F1F1F"/>
+  <rect width="128" height="128" rx="20" fill="#1F1F1F"/>
 
-  <!-- Film strip (left side) -->
+  <!-- ===================== -->
+  <!-- Film strip icon (left) -->
+  <!-- ===================== -->
   <!-- Main body -->
-  <rect x="8" y="22" width="48" height="58" rx="4" fill="#E5A00D"/>
-  <!-- Perforations top -->
-  <rect x="8"  y="22" width="8" height="58" rx="2" fill="#1F1F1F" opacity="0.5"/>
-  <rect x="48" y="22" width="8" height="58" rx="2" fill="#1F1F1F" opacity="0.5"/>
-  <!-- Perforation holes top row -->
-  <rect x="10" y="26" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="10" y="38" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="10" y="50" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="10" y="62" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="10" y="74" width="4" height="5" rx="1" fill="#1F1F1F"/>
-  <!-- Perforation holes right row -->
-  <rect x="50" y="26" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="50" y="38" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="50" y="50" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="50" y="62" width="4" height="6" rx="1" fill="#1F1F1F"/>
-  <rect x="50" y="74" width="4" height="5" rx="1" fill="#1F1F1F"/>
-  <!-- Film frame window -->
-  <rect x="20" y="30" width="24" height="42" rx="2" fill="#1F1F1F" opacity="0.6"/>
-  <!-- Play triangle on film -->
-  <polygon points="28,44 28,58 40,51" fill="#E5A00D"/>
+  <rect x="6" y="14" width="52" height="46" rx="3" fill="#E5A00D"/>
+  <!-- Left perforation strip -->
+  <rect x="6" y="14" width="11" height="46" rx="3" fill="#2E2E2E"/>
+  <!-- Right perforation strip -->
+  <rect x="47" y="14" width="11" height="46" rx="3" fill="#2E2E2E"/>
+  <!-- Left perf holes -->
+  <rect x="9"  y="19" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="9"  y="30" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="9"  y="41" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="9"  y="52" width="5" height="5" rx="1" fill="#1F1F1F"/>
+  <!-- Right perf holes -->
+  <rect x="50" y="19" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="50" y="30" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="50" y="41" width="5" height="7" rx="1" fill="#1F1F1F"/>
+  <rect x="50" y="52" width="5" height="5" rx="1" fill="#1F1F1F"/>
+  <!-- Frame window -->
+  <rect x="20" y="18" width="24" height="38" rx="2" fill="#2E2E2E" opacity="0.7"/>
 
-  <!-- TV screen (right side) -->
-  <!-- Screen body -->
-  <rect x="68" y="22" width="52" height="42" rx="5" fill="#E5A00D"/>
-  <!-- Screen bezel -->
-  <rect x="72" y="26" width="44" height="34" rx="3" fill="#1F1F1F" opacity="0.6"/>
-  <!-- Signal bars inside screen -->
-  <rect x="80" y="46" width="5" height="8"  rx="1" fill="#E5A00D"/>
-  <rect x="88" y="41" width="5" height="13" rx="1" fill="#E5A00D"/>
-  <rect x="96" y="36" width="5" height="18" rx="1" fill="#E5A00D"/>
-  <rect x="104" y="31" width="5" height="23" rx="1" fill="#E5A00D"/>
-  <!-- Stand -->
-  <rect x="88" y="64" width="16" height="4" rx="2" fill="#E5A00D"/>
-  <!-- Base -->
-  <rect x="82" y="67" width="28" height="4" rx="2" fill="#E5A00D"/>
+  <!-- ===================== -->
+  <!-- Monitor icon (right)  -->
+  <!-- ===================== -->
+  <!-- Screen -->
+  <rect x="70" y="14" width="52" height="38" rx="5" fill="#E5A00D"/>
+  <!-- Screen inner bezel -->
+  <rect x="75" y="19" width="42" height="28" rx="3" fill="#2E2E2E" opacity="0.7"/>
+  <!-- Monitor neck -->
+  <rect x="93" y="52" width="8" height="8" rx="1" fill="#E5A00D"/>
+  <!-- Monitor base -->
+  <rect x="80" y="59" width="34" height="6" rx="3" fill="#E5A00D"/>
 
-  <!-- Wide down arrow -->
-  <polygon points="16,88 112,88 112,98 74,98 74,112 54,112 54,98 16,98" fill="#E5A00D"/>
-  <!-- Arrow head -->
-  <polygon points="4,98 64,120 124,98" fill="#E5A00D"/>
+  <!-- ========================== -->
+  <!-- Wide downward arrow        -->
+  <!-- ========================== -->
+  <!-- Arrow shaft -->
+  <rect x="46" y="76" width="36" height="22" rx="2" fill="#E5A00D"/>
+  <!-- Arrow head (wide triangle) -->
+  <polygon points="14,98 114,98 64,120" fill="#E5A00D"/>
 
 </svg>
