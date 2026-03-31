@@ -273,4 +273,8 @@ Verify every dependency is compatible with commercial distribution. As of the cu
 
 ### Session Workflow
 - **After the user confirms each checklist step is complete, re-display the full project checklist** with that step marked done before proceeding to the next
-- Recommended model: **Sonnet 4.6** for most coding phases; switch to **Opus 4.6** for complex architecture decisions (e.g. Plex API design, license key logic)
+- **Proactively recommend model switches** at natural transition points — do not wait for the user to ask:
+  - Recommend **Opus 4.6** when the next task involves complex architecture, tricky API design, security-sensitive logic (e.g. license key validation), or decisions with hard-to-reverse consequences
+  - Recommend returning to **Sonnet 4.6** when the complex decision is resolved and the work returns to routine implementation, testing, or boilerplate
+  - Format the recommendation clearly, e.g.: `**Model suggestion:** Switch to Opus 4.6 for this step — [brief reason].`
+  - Note: the AI cannot switch models itself — flag it and let the user make the change before proceeding
