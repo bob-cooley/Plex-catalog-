@@ -270,3 +270,7 @@ Verify every dependency is compatible with commercial distribution. As of the cu
 - "Showrunner" is not a Plex API field — use Executive Producer and document the limitation
 - Keep the free tier gating logic clean and in one place — it's a product decision, not a technical one
 - Update this CLAUDE.md whenever scope, stack, or structure changes significantly
+
+### Session Workflow
+- **After the user confirms each checklist step is complete, re-display the full project checklist** with that step marked done before proceeding to the next
+- Recommended model: **Sonnet 4.6** for most coding phases; switch to **Opus 4.6** for complex architecture decisions (e.g. Plex API design, license key logic)
