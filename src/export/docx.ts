@@ -1,6 +1,6 @@
 import {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, BorderStyle, ShadingType, PageOrientation,
+  WidthType, BorderStyle, ShadingType, PageOrientation, convertMillimetersToTwip,
 } from 'docx'
 import type { CatalogData } from '../plex/types'
 import {
@@ -14,9 +14,8 @@ const PLEX_YELLOW = 'E5A00D'
 const HEADER_BG = '2E2E2E'
 
 // A4 landscape: 297mm wide, 210mm tall. 20mm margins each side.
-// Usable width = 257mm = ~14572 twips (1 twip = 1/1440 inch = 0.0176mm)
-const MM_TO_TWIP = 56.69
-const USABLE_W = Math.round(257 * MM_TO_TWIP)
+// Usable width = 257mm
+const USABLE_W = convertMillimetersToTwip(257)
 
 // Column widths in twips — movies (11 cols) and TV shows (12 cols)
 // Values are proportional; they will be scaled to fill USABLE_W exactly.
@@ -109,14 +108,14 @@ export async function exportDocx(catalog: CatalogData): Promise<void> {
         page: {
           size: {
             orientation: PageOrientation.LANDSCAPE,
-            width:  Math.round(297 * MM_TO_TWIP),
-            height: Math.round(210 * MM_TO_TWIP),
+            width:  convertMillimetersToTwip(297),
+            height: convertMillimetersToTwip(210),
           },
           margin: {
-            top:    Math.round(20 * MM_TO_TWIP),
-            bottom: Math.round(20 * MM_TO_TWIP),
-            left:   Math.round(20 * MM_TO_TWIP),
-            right:  Math.round(20 * MM_TO_TWIP),
+            top:    convertMillimetersToTwip(20),
+            bottom: convertMillimetersToTwip(20),
+            left:   convertMillimetersToTwip(20),
+            right:  convertMillimetersToTwip(20),
           },
         },
       },
