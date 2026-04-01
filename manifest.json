@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Plex Catalog",
-  "version": "0.1.0",
+  "version": "0.42.0",
   "description": "Export your Plex media library to XLSX, PDF, DOCX, RTF, TXT, or XML",
   "permissions": ["storage", "scripting"],
   "host_permissions": ["http://localhost:32400/*", "http://127.0.0.1:32400/*"],
