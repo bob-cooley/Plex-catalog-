@@ -105,6 +105,13 @@ select {
   color: #666;
 }
 
+.hint-connect {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .hint a {
   color: #e5a00d;
   text-decoration: none;

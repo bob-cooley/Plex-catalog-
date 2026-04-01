@@ -8,11 +8,10 @@ import { exportTxt } from '../export/txt'
 import { exportXml } from '../export/xml'
 
 // ---------------------------------------------------------------------------
-// Storage keys — token stored in chrome.storage.local per project conventions
+// Storage keys
 // ---------------------------------------------------------------------------
 const STORAGE_URL_KEY = 'plexUrl'
 const STORAGE_TOKEN_KEY = 'plexToken'
-const DEFAULT_URL = 'http://localhost:32400'
 
 // ---------------------------------------------------------------------------
 // Element references
@@ -20,6 +19,8 @@ const DEFAULT_URL = 'http://localhost:32400'
 const inputUrl = document.getElementById('input-url') as HTMLInputElement
 const inputToken = document.getElementById('input-token') as HTMLInputElement
 const btnConnect = document.getElementById('btn-connect') as HTMLButtonElement
+const btnShowManual = document.getElementById('btn-show-manual') as HTMLButtonElement
+const manualEntry = document.getElementById('manual-entry') as HTMLElement
 const btnDisconnect = document.getElementById('btn-disconnect') as HTMLButtonElement
 const btnExport = document.getElementById('btn-export') as HTMLButtonElement
 const sectionConnect = document.getElementById('section-connect') as HTMLElement
@@ -33,38 +34,81 @@ const msgExportError = document.getElementById('msg-export-error') as HTMLElemen
 // State
 // ---------------------------------------------------------------------------
 let activeClient: PlexClient | null = null
-let discoveriedSections: LibrarySection[] = []
+let discoveredSections: LibrarySection[] = []
 
 // ---------------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadSavedSettings()
   btnConnect.addEventListener('click', handleConnect)
   btnDisconnect.addEventListener('click', handleDisconnect)
   btnExport.addEventListener('click', handleExport)
+  btnShowManual.addEventListener('click', () => {
+    manualEntry.hidden = false
+    btnShowManual.hidden = true
+  })
+
+  // Silent reconnect with saved credentials
+  const stored = await chrome.storage.local.get([STORAGE_URL_KEY, STORAGE_TOKEN_KEY])
+  const savedUrl = stored[STORAGE_URL_KEY] as string | undefined
+  const savedToken = stored[STORAGE_TOKEN_KEY] as string | undefined
+  if (savedUrl && savedToken) {
+    await connectWith(savedUrl, savedToken)
+  }
 })
 
-async function loadSavedSettings(): Promise<void> {
-  const stored = await chrome.storage.local.get([STORAGE_URL_KEY, STORAGE_TOKEN_KEY])
-  inputUrl.value = (stored[STORAGE_URL_KEY] as string) || DEFAULT_URL
-  if (stored[STORAGE_TOKEN_KEY]) {
-    inputToken.value = stored[STORAGE_TOKEN_KEY] as string
+// ---------------------------------------------------------------------------
+// Auto-detect
+// ---------------------------------------------------------------------------
+async function autoDetectPlex(): Promise<{ url: string; token: string } | null> {
+  try {
+    const tabs = await chrome.tabs.query({ url: '*://*:32400/*' })
+    for (const tab of tabs) {
+      if (!tab.id || !tab.url) continue
+      const origin = new URL(tab.url).origin
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => localStorage.getItem('myPlexAccessToken'),
+      })
+      const token = results[0]?.result
+      if (token) return { url: origin, token }
+    }
+  } catch {
+    // Injection can fail for non-injectable tabs; treat as not found
   }
+  return null
 }
 
 // ---------------------------------------------------------------------------
 // Connect / Disconnect
 // ---------------------------------------------------------------------------
 async function handleConnect(): Promise<void> {
-  const url = inputUrl.value.trim()
-  const token = inputToken.value.trim()
+  setConnecting(true)
+  hideConnectError()
 
-  if (!url || !token) {
-    showConnectError('Server URL and token are required.')
+  const detected = await autoDetectPlex()
+
+  if (detected) {
+    await connectWith(detected.url, detected.token)
     return
   }
 
+  // Fall back to manual fields if visible
+  const manualUrl = inputUrl?.value.trim()
+  const manualToken = inputToken?.value.trim()
+
+  if (manualUrl && manualToken) {
+    await connectWith(manualUrl, manualToken)
+    return
+  }
+
+  setConnecting(false)
+  showConnectError('Plex not found. Open Plex in another tab and try again, or enter your server details manually.')
+  manualEntry.hidden = false
+  btnShowManual.hidden = true
+}
+
+async function connectWith(url: string, token: string): Promise<void> {
   setConnecting(true)
   hideConnectError()
 
@@ -73,22 +117,20 @@ async function handleConnect(): Promise<void> {
 
   if (!reachable) {
     setConnecting(false)
-    showConnectError('Could not connect. Check the URL and token.')
+    await chrome.storage.local.remove([STORAGE_URL_KEY, STORAGE_TOKEN_KEY])
+    showConnectError('Could not connect to Plex. Make sure Plex is running and try again.')
     return
   }
 
-  // Save to storage — token treated like a password, storage.local only
   await chrome.storage.local.set({
     [STORAGE_URL_KEY]: url,
     [STORAGE_TOKEN_KEY]: token,
   })
 
-  // Discover library sections
   try {
-    discoveriedSections = await client.getLibrarySections()
+    discoveredSections = await client.getLibrarySections()
   } catch {
-    // Non-fatal — export will handle missing sections gracefully
-    discoveriedSections = []
+    discoveredSections = []
   }
 
   activeClient = client
@@ -98,9 +140,12 @@ async function handleConnect(): Promise<void> {
 
 function handleDisconnect(): void {
   activeClient = null
-  discoveriedSections = []
+  discoveredSections = []
+  chrome.storage.local.remove([STORAGE_URL_KEY, STORAGE_TOKEN_KEY])
   sectionExport.hidden = true
   sectionConnect.hidden = false
+  manualEntry.hidden = true
+  btnShowManual.hidden = false
   hideExportMessages()
 }
 
@@ -118,10 +163,10 @@ async function handleExport(): Promise<void> {
   hideExportMessages()
 
   try {
-    const movieSectionIds = discoveriedSections
+    const movieSectionIds = discoveredSections
       .filter((s) => s.type === 'movie')
       .map((s) => s.key)
-    const showSectionIds = discoveriedSections
+    const showSectionIds = discoveredSections
       .filter((s) => s.type === 'show')
       .map((s) => s.key)
 
@@ -161,7 +206,7 @@ async function handleExport(): Promise<void> {
 // ---------------------------------------------------------------------------
 function setConnecting(connecting: boolean): void {
   btnConnect.disabled = connecting
-  btnConnect.textContent = connecting ? 'Connecting...' : 'Connect'
+  btnConnect.textContent = connecting ? 'Connecting...' : 'Connect to Plex'
 }
 
 function setExporting(exporting: boolean): void {
@@ -172,7 +217,6 @@ function setExporting(exporting: boolean): void {
 function showExportSection(url: string): void {
   sectionConnect.hidden = true
   sectionExport.hidden = false
-  // Strip protocol for display — token is never shown
   labelServer.textContent = url.replace(/^https?:\/\//, '')
 }
 

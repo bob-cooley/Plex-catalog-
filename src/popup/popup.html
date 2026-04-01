@@ -17,32 +17,31 @@
 
       <!-- Connection section -->
       <section id="section-connect">
-        <div class="field">
-          <label for="input-url">Server URL</label>
-          <input
-            type="text"
-            id="input-url"
-            placeholder="http://localhost:32400"
-            autocomplete="off"
-            spellcheck="false"
-          />
-        </div>
-        <div class="field">
-          <label for="input-token">Plex Token</label>
-          <input
-            type="password"
-            id="input-token"
-            placeholder="Your X-Plex-Token"
-            autocomplete="off"
-          />
-          <p class="hint">
-            <a href="https://support.plex.tv/articles/204059436" target="_blank">
-              How do I find my token?
-            </a>
-          </p>
-        </div>
-        <button id="btn-connect" class="btn btn-primary">Connect</button>
+        <p class="hint-connect">Open Plex in another tab, then click Connect.</p>
+        <button id="btn-connect" class="btn btn-primary">Connect to Plex</button>
         <p id="msg-connect-error" class="msg msg-error" hidden></p>
+        <button id="btn-show-manual" class="btn-link">Enter server details manually</button>
+        <div id="manual-entry" hidden>
+          <div class="field">
+            <label for="input-url">Server URL</label>
+            <input
+              type="text"
+              id="input-url"
+              placeholder="http://localhost:32400"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <div class="field">
+            <label for="input-token">Plex Token</label>
+            <input
+              type="password"
+              id="input-token"
+              placeholder="Your X-Plex-Token"
+              autocomplete="off"
+            />
+          </div>
+        </div>
       </section>
 
       <!-- Export options (shown after connecting) -->
