@@ -108,8 +108,8 @@ export async function exportDocx(catalog: CatalogData): Promise<void> {
         page: {
           size: {
             orientation: PageOrientation.LANDSCAPE,
-            width:  convertMillimetersToTwip(297),
-            height: convertMillimetersToTwip(210),
+            width:  convertMillimetersToTwip(210),
+            height: convertMillimetersToTwip(297),
           },
           margin: {
             top:    convertMillimetersToTwip(20),
