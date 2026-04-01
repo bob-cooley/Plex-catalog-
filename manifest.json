@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Export your Plex media library to XLSX, PDF, DOCX, RTF, TXT, or XML",
   "permissions": ["storage", "scripting"],
-  "host_permissions": ["*://localhost:32400/*", "*://127.0.0.1:32400/*"],
+  "host_permissions": ["http://localhost:32400/*", "http://127.0.0.1:32400/*"],
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_title": "Plex Catalog",

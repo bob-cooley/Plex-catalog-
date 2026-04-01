@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function autoDetectPlex(): Promise<{ url: string; token: string } | null> {
   try {
     const tabs = await chrome.tabs.query({
-      url: ['*://localhost:32400/*', '*://127.0.0.1:32400/*'],
+      url: ['http://localhost:32400/*', 'http://127.0.0.1:32400/*'],
     })
     for (const tab of tabs) {
       if (!tab.id || !tab.url) continue
