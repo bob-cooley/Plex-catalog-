@@ -29,9 +29,10 @@ export function exportXlsx(catalog: CatalogData): void {
     ws['!cols'] = [
       { wch: 40 }, // Title
       { wch: 6 },  // Year
-      { wch: 25 }, // Director
-      { wch: 25 }, // Second Director
-      { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, // Actors
+      { wch: 18 }, { wch: 18 }, { wch: 18 }, // Genres
+      { wch: 22 }, // Director
+      { wch: 22 }, // Second Director
+      { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, // Actors
     ]
 
     XLSX.utils.book_append_sheet(wb, ws, 'Movies')
@@ -47,10 +48,11 @@ export function exportXlsx(catalog: CatalogData): void {
     ws['!cols'] = [
       { wch: 35 }, // Show
       { wch: 8 },  // Episode code
-      { wch: 40 }, // Title
-      { wch: 25 }, // Executive Producer
-      { wch: 25 }, // Director
-      { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, // Actors
+      { wch: 38 }, // Title
+      { wch: 18 }, { wch: 18 }, { wch: 18 }, // Genres
+      { wch: 22 }, // Executive Producer
+      { wch: 22 }, // Director
+      { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, // Actors
     ]
 
     XLSX.utils.book_append_sheet(wb, ws, 'TV Shows')

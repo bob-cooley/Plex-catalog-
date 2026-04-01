@@ -35,6 +35,8 @@ export function exportRtf(catalog: CatalogData): void {
       const row = movieToRow(movie)
       const titleLine = row.year ? `${esc(row.title)} (${row.year})` : esc(row.title)
       parts.push(line(`{\\fs26 ${bold(titleLine)}}`))
+      const genres = [row.genre1, row.genre2, row.genre3].filter(Boolean)
+      if (genres.length > 0)  parts.push(line(`  ${bold('Genres:')} ${esc(genres.join(', '))}`))
       if (row.director)       parts.push(line(`  ${bold(labels.director + ':')} ${esc(row.director)}`))
       if (row.secondDirector) parts.push(line(`  ${bold(labels.secondDirector + ':')} ${esc(row.secondDirector)}`))
       const actors = [row.actor1, row.actor2, row.actor3, row.actor4].filter(Boolean)
@@ -50,6 +52,8 @@ export function exportRtf(catalog: CatalogData): void {
     const labels = EPISODE_HEADER_LABELS
     for (const show of catalog.shows) {
       parts.push(line(`{\\fs26 ${bold(esc(show.title))}}`))
+      const showGenres = show.genres.filter(Boolean)
+      if (showGenres.length > 0) parts.push(line(`  ${bold('Genres:')} ${esc(showGenres.join(', '))}`))
       if (show.executiveProducers.length > 0) {
         parts.push(line(`  ${bold(labels.executiveProducer + ':')} ${esc(show.executiveProducers.join(', '))}`))
       }

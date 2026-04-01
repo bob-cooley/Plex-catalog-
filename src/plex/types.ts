@@ -45,6 +45,9 @@ export interface PlexMetadata {
   parentIndex?: number // Season number (on episodes)
   index?: number // Episode number (on episodes)
 
+  // Genres
+  Genre?: PlexTag[]
+
   // People - arrays of tagged names
   Director?: PlexTag[]
   Role?: PlexTag[] // Actors: show-level = main cast, episode-level = guest cast
@@ -82,6 +85,7 @@ export interface LibrarySection {
 export interface Movie {
   title: string
   year?: number
+  genres: string[] // Up to 3
   directors: string[]
   actors: string[] // Top 4 billed
 }
@@ -89,6 +93,7 @@ export interface Movie {
 export interface TvShow {
   title: string
   year?: number
+  genres: string[] // Up to 3
   executiveProducers: string[]
   actors: string[] // Top 4 billed (show-level main cast)
   episodes: Episode[]

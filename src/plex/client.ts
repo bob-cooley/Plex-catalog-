@@ -11,6 +11,8 @@ import type {
 
 /** Maximum number of billed actors to include per item. */
 const MAX_ACTORS = 4
+/** Maximum number of genres to include per item. */
+const MAX_GENRES = 3
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -111,6 +113,7 @@ export class PlexClient {
     return items.map((item) => ({
       title: item.title,
       year: item.year,
+      genres: extractTags(item.Genre, MAX_GENRES),
       directors: extractTags(item.Director),
       actors: extractTags(item.Role, MAX_ACTORS),
     }))
@@ -159,6 +162,7 @@ export class PlexClient {
       return {
         title: show.title,
         year: show.year,
+        genres: extractTags(show.Genre, MAX_GENRES),
         executiveProducers: extractExecutiveProducers(show.Producer),
         actors: showActors,
         episodes,

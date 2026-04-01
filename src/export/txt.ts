@@ -17,6 +17,8 @@ export function exportTxt(catalog: CatalogData): void {
     for (const movie of catalog.movies) {
       const row = movieToRow(movie)
       lines.push(row.title + (row.year ? ` (${row.year})` : ''))
+      const genres = [row.genre1, row.genre2, row.genre3].filter(Boolean)
+      if (genres.length > 0)  lines.push(`  Genres: ${genres.join(', ')}`)
       if (row.director)       lines.push(`  ${labels.director}: ${row.director}`)
       if (row.secondDirector) lines.push(`  ${labels.secondDirector}: ${row.secondDirector}`)
       const actors = [row.actor1, row.actor2, row.actor3, row.actor4].filter(Boolean)
@@ -34,6 +36,8 @@ export function exportTxt(catalog: CatalogData): void {
     for (const show of catalog.shows) {
       const rows = showToRows(show)
       lines.push(show.title)
+      const genres = show.genres.filter(Boolean)
+      if (genres.length > 0) lines.push(`  Genres: ${genres.join(', ')}`)
       if (show.executiveProducers.length > 0) {
         lines.push(`  ${labels.executiveProducer}: ${show.executiveProducers.join(', ')}`)
       }

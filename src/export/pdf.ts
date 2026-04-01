@@ -73,8 +73,9 @@ export function exportPdf(catalog: CatalogData): void {
   if (catalog.movies.length > 0) {
     drawSectionTitle('Movies')
     const usableW = pageW - MARGIN * 2
-    const colWidths = [55, 14, 35, 35, 30, 30, 30, 30].map(
-      (w) => (w / 259) * usableW
+    // title, year, genre1-3, director, 2nd director, actor1-4
+    const colWidths = [44, 12, 18, 18, 18, 26, 26, 20, 20, 20, 20].map(
+      (w) => (w / 242) * usableW
     )
     const headers = MOVIE_HEADERS.map((k) => MOVIE_HEADER_LABELS[k])
     drawTableHeader(headers, colWidths)
@@ -90,8 +91,9 @@ export function exportPdf(catalog: CatalogData): void {
   if (catalog.shows.length > 0) {
     drawSectionTitle('TV Shows')
     const usableW = pageW - MARGIN * 2
-    const colWidths = [45, 16, 50, 35, 35, 28, 28, 28, 28].map(
-      (w) => (w / 293) * usableW
+    // show, ep code, ep title, genre1-3, exec producer, director, actor1-4
+    const colWidths = [36, 12, 38, 16, 16, 16, 26, 26, 20, 20, 20, 20].map(
+      (w) => (w / 266) * usableW
     )
     const headers = EPISODE_HEADERS.map((k) => EPISODE_HEADER_LABELS[k])
     drawTableHeader(headers, colWidths)

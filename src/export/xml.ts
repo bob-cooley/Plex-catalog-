@@ -27,6 +27,12 @@ export function exportXml(catalog: CatalogData): void {
       lines.push('    <movie>')
       lines.push(tag('title', row.title, '      '))
       if (row.year)            lines.push(tag('year', row.year, '      '))
+      const genres = [row.genre1, row.genre2, row.genre3].filter(Boolean)
+      if (genres.length > 0) {
+        lines.push('      <genres>')
+        for (const g of genres) lines.push(tag('genre', g, '        '))
+        lines.push('      </genres>')
+      }
       if (row.director)        lines.push(tag('director', row.director, '      '))
       if (row.secondDirector)  lines.push(tag('secondDirector', row.secondDirector, '      '))
       const actors = [row.actor1, row.actor2, row.actor3, row.actor4].filter(Boolean)
@@ -46,6 +52,12 @@ export function exportXml(catalog: CatalogData): void {
       lines.push('    <show>')
       lines.push(tag('title', show.title, '      '))
       if (show.year) lines.push(tag('year', String(show.year), '      '))
+      const showGenres = show.genres.filter(Boolean)
+      if (showGenres.length > 0) {
+        lines.push('      <genres>')
+        for (const g of showGenres) lines.push(tag('genre', g, '        '))
+        lines.push('      </genres>')
+      }
       if (show.executiveProducers.length > 0) {
         lines.push(tag('executiveProducer', show.executiveProducers[0], '      '))
       }
