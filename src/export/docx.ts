@@ -1,6 +1,6 @@
 import {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, HeadingLevel, BorderStyle, ShadingType,
+  WidthType, BorderStyle, ShadingType, PageOrientation,
 } from 'docx'
 import type { CatalogData } from '../plex/types'
 import {
@@ -13,74 +13,115 @@ import {
 const PLEX_YELLOW = 'E5A00D'
 const HEADER_BG = '2E2E2E'
 
-function headerCell(text: string): TableCell {
+// A4 landscape: 297mm wide, 210mm tall. 20mm margins each side.
+// Usable width = 257mm = ~14572 twips (1 twip = 1/1440 inch = 0.0176mm)
+const MM_TO_TWIP = 56.69
+const USABLE_W = Math.round(257 * MM_TO_TWIP)
+
+// Column widths in twips — movies (11 cols) and TV shows (12 cols)
+// Values are proportional; they will be scaled to fill USABLE_W exactly.
+const MOVIE_COL_WEIGHTS =    [50, 10, 15, 15, 15, 28, 28, 20, 20, 20, 20] // 241 units
+const EPISODE_COL_WEIGHTS =  [38, 10, 44, 13, 13, 13, 24, 24, 18, 18, 18, 18] // 251 units
+
+function scaleWeights(weights: number[]): number[] {
+  const total = weights.reduce((a, b) => a + b, 0)
+  return weights.map((w) => Math.round((w / total) * USABLE_W))
+}
+
+function headerCell(text: string, width: number): TableCell {
   return new TableCell({
+    width: { size: width, type: WidthType.DXA },
     shading: { type: ShadingType.SOLID, color: HEADER_BG },
     children: [new Paragraph({
-      children: [new TextRun({ text, bold: true, color: PLEX_YELLOW, size: 18 })],
+      children: [new TextRun({ text, bold: true, color: PLEX_YELLOW, size: 16 })],
     })],
   })
 }
 
-function dataCell(text: string): TableCell {
+function dataCell(text: string, width: number): TableCell {
   return new TableCell({
+    width: { size: width, type: WidthType.DXA },
     children: [new Paragraph({
-      children: [new TextRun({ text, size: 18 })],
+      children: [new TextRun({ text, size: 16 })],
     })],
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: '444444' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: '444444' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: '444444' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: '444444' },
+      top:    { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
+      left:   { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
+      right:  { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
     },
   })
 }
 
-function makeTable(headers: string[], rows: string[][]): Table {
+function makeTable(headers: string[], rows: string[][], colWidths: number[]): Table {
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: USABLE_W, type: WidthType.DXA },
+    columnWidths: colWidths,
     rows: [
-      new TableRow({ children: headers.map(headerCell), tableHeader: true }),
-      ...rows.map((row) => new TableRow({ children: row.map(dataCell) })),
+      new TableRow({
+        tableHeader: true,
+        children: headers.map((h, i) => headerCell(h, colWidths[i])),
+      }),
+      ...rows.map((row) =>
+        new TableRow({ children: row.map((v, i) => dataCell(v, colWidths[i])) })
+      ),
     ],
   })
 }
 
+function sectionHeading(text: string): Paragraph {
+  return new Paragraph({
+    children: [new TextRun({ text, bold: true, color: PLEX_YELLOW, size: 32 })],
+    spacing: { after: 200 },
+  })
+}
+
 export async function exportDocx(catalog: CatalogData): Promise<void> {
-  const sections: (Paragraph | Table)[] = []
+  const children: (Paragraph | Table)[] = []
 
   if (catalog.movies.length > 0) {
-    sections.push(new Paragraph({
-      text: 'Movies',
-      heading: HeadingLevel.HEADING_1,
-      children: [new TextRun({ text: 'Movies', bold: true, color: PLEX_YELLOW, size: 32 })],
-    }))
-    sections.push(new Paragraph({ text: '' }))
+    children.push(sectionHeading('Movies'))
 
+    const colWidths = scaleWeights(MOVIE_COL_WEIGHTS)
     const headers = MOVIE_HEADERS.map((k) => MOVIE_HEADER_LABELS[k])
     const rows = catalog.movies.map((m) => {
       const row = movieToRow(m)
       return MOVIE_HEADERS.map((k) => row[k])
     })
-    sections.push(makeTable(headers, rows))
-    sections.push(new Paragraph({ text: '' }))
+    children.push(makeTable(headers, rows, colWidths))
+    children.push(new Paragraph({ text: '' }))
   }
 
   if (catalog.shows.length > 0) {
-    sections.push(new Paragraph({
-      children: [new TextRun({ text: 'TV Shows', bold: true, color: PLEX_YELLOW, size: 32 })],
-    }))
-    sections.push(new Paragraph({ text: '' }))
+    children.push(sectionHeading('TV Shows'))
 
+    const colWidths = scaleWeights(EPISODE_COL_WEIGHTS)
     const headers = EPISODE_HEADERS.map((k) => EPISODE_HEADER_LABELS[k])
     const rows = catalog.shows.flatMap((show) =>
       showToRows(show).map((row) => EPISODE_HEADERS.map((k) => row[k]))
     )
-    sections.push(makeTable(headers, rows))
+    children.push(makeTable(headers, rows, colWidths))
   }
 
   const doc = new Document({
-    sections: [{ children: sections }],
+    sections: [{
+      properties: {
+        page: {
+          size: {
+            orientation: PageOrientation.LANDSCAPE,
+            width:  Math.round(297 * MM_TO_TWIP),
+            height: Math.round(210 * MM_TO_TWIP),
+          },
+          margin: {
+            top:    Math.round(20 * MM_TO_TWIP),
+            bottom: Math.round(20 * MM_TO_TWIP),
+            left:   Math.round(20 * MM_TO_TWIP),
+            right:  Math.round(20 * MM_TO_TWIP),
+          },
+        },
+      },
+      children,
+    }],
   })
 
   const buf = await Packer.toBlob(doc)
