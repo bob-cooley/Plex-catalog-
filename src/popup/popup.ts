@@ -29,6 +29,7 @@ const labelServer = document.getElementById('label-server') as HTMLElement
 const msgConnectError = document.getElementById('msg-connect-error') as HTMLElement
 const msgExportStatus = document.getElementById('msg-export-status') as HTMLElement
 const msgExportError = document.getElementById('msg-export-error') as HTMLElement
+const labelVersion = document.getElementById('label-version') as HTMLElement
 
 // ---------------------------------------------------------------------------
 // State
@@ -40,6 +41,9 @@ let discoveredSections: LibrarySection[] = []
 // Init
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
+  const manifest = chrome.runtime.getManifest()
+  labelVersion.textContent = `v${manifest.version}`
+
   btnConnect.addEventListener('click', handleConnect)
   btnDisconnect.addEventListener('click', handleDisconnect)
   btnExport.addEventListener('click', handleExport)
@@ -178,6 +182,11 @@ async function handleExport(): Promise<void> {
     }
 
     const catalog = await activeClient.getCatalog(sectionIds)
+
+    if (catalog.movies.length === 0 && catalog.shows.length === 0) {
+      showExportError('No content found. Check that your library has movies or TV shows.')
+      return
+    }
 
     switch (format) {
       case 'xlsx': exportXlsx(catalog); break
