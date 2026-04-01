@@ -13,15 +13,17 @@ const LIGHT_ROW: [number, number, number] = [245, 245, 245]
 const WHITE: [number, number, number] = [255, 255, 255]
 
 const MARGIN = 14
-const ROW_H = 7
 const HEADER_H = 8
+const LINE_H = 3.5   // mm per text line at 7.5pt
+const CELL_PAD = 1.5 // mm top/bottom padding inside a cell
+const MIN_ROW_H = LINE_H + CELL_PAD * 2
 
 export function exportPdf(catalog: CatalogData): void {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
   let y = MARGIN
 
-  function checkNewPage(needed = ROW_H): void {
+  function checkNewPage(needed = MIN_ROW_H): void {
     if (y + needed > doc.internal.pageSize.getHeight() - MARGIN) {
       doc.addPage()
       y = MARGIN
@@ -55,18 +57,29 @@ export function exportPdf(catalog: CatalogData): void {
   }
 
   function drawTableRow(values: string[], colWidths: number[], rowIndex: number): void {
-    checkNewPage(ROW_H)
-    doc.setFillColor(...(rowIndex % 2 === 0 ? WHITE : LIGHT_ROW))
-    doc.rect(MARGIN, y, pageW - MARGIN * 2, ROW_H, 'F')
-    doc.setTextColor(40, 40, 40)
     doc.setFontSize(7.5)
     doc.setFont('helvetica', 'normal')
+
+    // Split each cell value to determine the tallest cell in this row
+    const splitValues = values.map((v, i) =>
+      doc.splitTextToSize(v ?? '', colWidths[i] - 2) as string[]
+    )
+    const maxLines = Math.max(1, ...splitValues.map((lines) => lines.length))
+    const rowH = Math.max(MIN_ROW_H, maxLines * LINE_H + CELL_PAD * 2)
+
+    checkNewPage(rowH)
+    doc.setFillColor(...(rowIndex % 2 === 0 ? WHITE : LIGHT_ROW))
+    doc.rect(MARGIN, y, pageW - MARGIN * 2, rowH, 'F')
+    doc.setTextColor(40, 40, 40)
+
     let x = MARGIN + 2
-    values.forEach((v, i) => {
-      doc.text(v ?? '', x, y + 5, { maxWidth: colWidths[i] - 2 })
+    splitValues.forEach((lines, i) => {
+      lines.forEach((line, li) => {
+        doc.text(line, x, y + CELL_PAD + LINE_H * (li + 0.85))
+      })
       x += colWidths[i]
     })
-    y += ROW_H
+    y += rowH
   }
 
   // Movies
