@@ -1,4 +1,4 @@
-# CLAUDE.md — Plex Catalog
+# CLAUDE.md — IndexMyPlex
 
 This file provides context and conventions for AI assistants (e.g., Claude Code) working in this repository.
 
@@ -6,7 +6,9 @@ This file provides context and conventions for AI assistants (e.g., Claude Code)
 
 ## Project Overview
 
-**Plex Catalog** is a **browser extension** that allows Plex Media Server users to export an index of their media library — movies and TV shows — into common document formats. It connects directly to the user's local Plex server, requires no external infrastructure, and keeps all data on the user's machine.
+**IndexMyPlex** is a **browser extension** that allows Plex Media Server users to export an index of their media library — movies and TV shows — into common document formats. It connects directly to the user's local Plex server, requires no external infrastructure, and keeps all data on the user's machine.
+
+IndexMyPlex is an independent tool and is not affiliated with or endorsed by Plex Inc.
 
 ### Origin
 The project began as a local macOS script that read a Plex library and output an Excel spreadsheet. This browser extension is the next iteration: more accessible, cross-platform, and with richer export options.
