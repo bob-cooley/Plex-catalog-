@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "IndexMyPlex",
   "version": "0.42.0",
-  "description": "Export your Plex media library to XLSX, PDF, DOCX, RTF, TXT, or XML. IndexMyPlex is an independent tool and is not affiliated with or endorsed by Plex Inc.",
+  "description": "Export your Plex media library to XLSX, PDF, DOCX, RTF, TXT, or XML. Not affiliated with or endorsed by Plex Inc.",
   "permissions": ["storage", "scripting"],
   "host_permissions": ["http://localhost:32400/*", "http://127.0.0.1:32400/*"],
   "action": {
